@@ -20,6 +20,7 @@ export default class LogController implements ControllerInterface {
     private init(): void {
         this.router.get('/', this.index);
         this.router.get('/:logId', this.find);
+        this.router.get('/:jobId/', this.jobLogs);
     }
 
     private index(req: Request, res: Response) {
@@ -27,6 +28,10 @@ export default class LogController implements ControllerInterface {
     }
 
     private find(req: Request, res: Response) {
+        return res.json({});
+    }
+
+    private jobLogs(req: Request, res: Response) {
         return res.json({});
     }
 }

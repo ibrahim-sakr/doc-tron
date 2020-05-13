@@ -26,7 +26,26 @@ export default class JobService {
         return job.save();
     }
 
-    async getReadyForDequeueList(): Promise<Job[]> {
+    async update(id: string, jobBody: JobStruct): Promise<object|null> {
+        const results = await Job.update(
+            jobBody.toObject(),
+            {
+                validate: true,
+                where: {id: id}
+            }
+        );
+
+        if(results[0] === 0) {
+            return null
+        }
+
+        return {
+            id: id,
+            ...jobBody.toObject()
+        }
+    }
+
+    getReadyForDequeueList(): Promise<Job[]> {
         // select jobs where nextRun === now +- some seconds
         return Job.findAll({
             where: {
@@ -36,6 +55,18 @@ export default class JobService {
                 //     [Op.gte]: moment().subtract(schedulerConfig.coefficient[0] || 0, 'seconds').toDate(),
                 //     [Op.lt]: moment().add(schedulerConfig.coefficient[1] || 0, 'seconds').toDate()
                 // }
+            }
+        })
+    }
+
+    getById(id: string): Promise<Job> {
+        return Job.findByPk(id);
+    }
+
+    deleteById(id: string) {
+        return Job.destroy({
+            where: {
+                id: id
             }
         })
     }

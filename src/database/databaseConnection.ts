@@ -12,7 +12,7 @@ const connect = () => {
         host: databaseConfig.mysql.host,
         port: databaseConfig.mysql.port,
         logging: (sql: string) => {
-            console.log(`MYSQL run Query: ${sql}`);
+            // console.log(`MYSQL run Query: ${sql}`);
         }
     });
 }
