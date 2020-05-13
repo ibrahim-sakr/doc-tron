@@ -1,4 +1,3 @@
-import {Request} from "express";
 import StructInterface from "../interfaces/StructInterface";
 
 export default class LogStruct implements StructInterface {

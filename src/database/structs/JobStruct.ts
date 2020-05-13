@@ -17,10 +17,7 @@ export default class JobStruct implements StructInterface {
         this.name = req.body.name;
         this.description = req.body.description;
         this.scheduled = req.body.scheduled;
-        this.worker = {
-            type: req.body.worker.type,
-            id: req.body.worker.id
-        };
+        this.worker = req.body.worker;
         this.nextRun = parseExpression(req.body.scheduled).next().toDate();
         this.args = req.body.args;
         this.inProgress = req.body.inProgress;

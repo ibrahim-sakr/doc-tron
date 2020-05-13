@@ -6,7 +6,7 @@ import {URL} from 'url';
 export default class HttpWorker extends EventEmitter implements WorkerInterface {
 
     send(job: any): void {
-        const {hostname, port, pathname} = new URL(job.worker.id);
+        const {hostname, port, pathname} = new URL(job.worker.url);
         this.request({
             hostname,
             port,
@@ -15,7 +15,7 @@ export default class HttpWorker extends EventEmitter implements WorkerInterface 
         });
     }
 
-    request({ hostname, port, path, body }) {
+    request({hostname, port, path, body}) {
         const req = request({
             hostname,
             port,
@@ -27,10 +27,12 @@ export default class HttpWorker extends EventEmitter implements WorkerInterface 
             }
         }, (res) => {
             res.on('data', data => this.emit('data', data));
-            res.on('error', (err) => this.emit('error', err));
+            res.on('error', (error) => this.emit('error', error.message));
             res.on('end', () => this.emit('end'));
         })
 
+        req.on('error', (error) => this.emit('error', error.message));
+        req.on('timeout', () => this.emit('error', 'could not connect to host, timeout'));
         req.write(body);
         req.end();
     }

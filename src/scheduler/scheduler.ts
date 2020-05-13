@@ -23,15 +23,16 @@ export default class Scheduler {
         // send to worker
         const output = { data: '' };
         const worker = this.getWorker(job.worker['type']);
-        worker.send(job);
         worker.on('data', this.onData(job, output));
         worker.on('end', this.onEnd(job, output));
         worker.on('error', this.onError(job, output));
+
+        worker.send(job);
     }
 
     private getWorker(type: string): WorkerInterface {
-        if(type in workersConfig) {
-            return new workersConfig[type]();
+        if(type in workersConfig.workers) {
+            return new workersConfig.workers[type]();
         }
     }
 
@@ -56,13 +57,15 @@ export default class Scheduler {
     }
 
     private onError(job: Job, output: { data: string }) {
-        return async (err: Error) => {
+        return async (error: string) => {
+            await (new JobService()).stopInProgress(job);
+
             // save log entry
             await (new LogService()).create(new LogStruct({
                 job_id: job.id,
                 status: 'failed',
                 output: output.data,
-                error: err.message
+                error: error
             }));
         }
     }

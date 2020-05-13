@@ -1,3 +1,5 @@
+import * as Joi from "@hapi/joi";
+
 export default interface WorkerInterface {
     on(event: "data", listener: (chunk: any) => void): this;
 
