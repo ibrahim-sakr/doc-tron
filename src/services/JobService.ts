@@ -6,8 +6,14 @@ import * as moment from "moment";
 import schedulerConfig from '../config/scheduler';
 
 export default class JobService {
-    all(): Promise<Job[]> {
-        return Job.findAll();
+    all(query: { status?: string, search?: string }): Promise<Job[]> {
+        return Job.findAll({
+            where: {
+                name: {
+                    [Op.like]: query.search ? '%' + query.search + '%' : '%%'
+                }
+            }
+        });
     }
 
     create(jobBody: JobStruct): Promise<Job> {
@@ -26,7 +32,7 @@ export default class JobService {
         return job.save();
     }
 
-    async update(id: string, jobBody: JobStruct): Promise<object|null> {
+    async update(id: string, jobBody: JobStruct): Promise<object | null> {
         const results = await Job.update(
             jobBody.toObject(),
             {
@@ -35,7 +41,7 @@ export default class JobService {
             }
         );
 
-        if(results[0] === 0) {
+        if (results[0] === 0) {
             return null
         }
 

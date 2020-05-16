@@ -7,6 +7,7 @@ import AuthController from '../apis/controllers/AuthController';
 import UsersController from '../apis/controllers/UsersController';
 import JobController from '../apis/controllers/JobController';
 import LogController from '../apis/controllers/LogController';
+import * as cors from 'cors';
 
 export default class ApiComponent implements ComponentInterface {
 
@@ -21,6 +22,7 @@ export default class ApiComponent implements ComponentInterface {
                     new LogController
                 ],
                 middleWares: [
+                    cors(),
                     bodyParser.json(),
                     bodyParser.urlencoded({ extended: true }),
                     loggerMiddleware

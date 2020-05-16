@@ -30,7 +30,7 @@ export default class JobController implements ControllerInterface {
 
     private async index(req: Request, res: Response) {
         // get all jobs
-        const jobs = await (new JobService).all();
+        const jobs = await (new JobService).all(req.query);
 
         return res.json(jobs);
     }
