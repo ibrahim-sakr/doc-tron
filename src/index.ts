@@ -1,4 +1,5 @@
 require('./utils/env');
+import "reflect-metadata";
 import {Loader, Settings} from 'he-loader';
 import ApiComponent from './components/ApiComponent';
 import SchedulerComponent from './components/SchedulerComponent';

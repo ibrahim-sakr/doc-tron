@@ -9,7 +9,7 @@ export default class FindJobValidation implements ValidationInterface{
             const { error } = this.schema().validate(req.params);
 
             if (error) {
-                return res.status(400).json(error.details).end();
+                return res.status(422).json(error.details).end();
             }
 
             req['jobId'] = req.params.jobId;

@@ -1,20 +1,17 @@
-import Log from "../database/models/Log";
-import LogStruct from "../database/structs/LogStruct";
+import {Log, LogInterface} from "../database/models/Log";
 
 export default class LogService {
     all(): Promise<Log[]> {
-        return Log.findAll();
+        return Log.find();
     }
 
-    create(logBody: LogStruct): Promise<Log> {
-        const log = Log.build();
+    create(logBody: LogInterface): Promise<Log> {
+        const log = new Log();
 
         log.job_id = logBody.job_id;
         log.status = logBody.status;
         log.output = logBody.output;
         log.error = logBody.error;
-        log.created_at = new Date();
-        log.updated_at = new Date();
 
         return log.save();
     }

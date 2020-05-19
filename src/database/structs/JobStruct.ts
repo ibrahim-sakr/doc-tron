@@ -4,6 +4,7 @@ import WorkerInterface from "../interfaces/WorkerInterface";
 import {parseExpression} from 'cron-parser';
 
 export default class JobStruct implements StructInterface {
+    id?: number;
     name: string;
     description: string | null;
     scheduled: string;
@@ -14,6 +15,7 @@ export default class JobStruct implements StructInterface {
     queued: boolean;
 
     constructor(req: Request) {
+        this.id = req.body.id;
         this.name = req.body.name;
         this.description = req.body.description;
         this.scheduled = req.body.scheduled;
@@ -26,6 +28,7 @@ export default class JobStruct implements StructInterface {
 
     toObject(): Object {
         return {
+            id: this.id,
             name: this.name,
             description: this.description,
             scheduled: this.scheduled,

@@ -9,7 +9,15 @@
     "dev": "ts-node src/index.ts",
     "watch": "nodemon",
     "build": "tsc --project ./tsconfig.json",
-    "lint": "eslint src --ext ts"
+    "lint": "eslint src --ext ts",
+    "typeorm": "ts-node node_modules/typeorm/cli.js",
+    "db:generate:model": "ts-node node_modules/typeorm/cli.js entity:create -n",
+    "db:generate:subscriber": "ts-node node_modules/typeorm/cli.js subscriber:create -n",
+    "db:generate:migration": "ts-node node_modules/typeorm/cli.js migration:create -n",
+    "db:migration:run": "ts-node node_modules/typeorm/cli.js migration:run",
+    "db:migration:revert": "ts-node node_modules/typeorm/cli.js migration:revert",
+    "db:migration:show": "ts-node node_modules/typeorm/cli.js migration:show",
+    "db:cache:clear": "ts-node node_modules/typeorm/cli.js cache:clear"
   },
   "keywords": [],
   "author": "",
@@ -38,12 +46,12 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "moment": "^2.25.1",
-    "mysql": "^2.18.1",
     "mysql2": "^2.1.0",
     "pg": "^8.1.0",
     "pg-hstore": "^2.3.3",
-    "sequelize": "^5.21.7",
-    "ssh2": "^0.8.9"
+    "reflect-metadata": "^0.1.13",
+    "ssh2": "^0.8.9",
+    "typeorm": "^0.2.24"
   },
   "nodemonConfig": {
     "watch": [

@@ -3,13 +3,14 @@ import workersConfig from "../config/workers";
 import WorkerInterface from "../workers/interfaces/WorkerInterface";
 import JobService from '../services/JobService';
 import LogService from "../services/LogService";
-import Job from "../database/models/Job";
-import LogStruct from "../database/structs/LogStruct";
+import {Job} from "../database/models/Job";
 
 export default class Scheduler {
     public run() {
         setInterval(async () => {
-            const jobs = await (new JobService).getReadyForDequeueList();
+            console.log('selecting all jobs');
+            const jobs: Job[] = await (new JobService).getReadyForDequeueList();
+            console.log('jobs', jobs);
 
             for (const job of jobs) {
                 this.dequeue(job);
@@ -18,7 +19,9 @@ export default class Scheduler {
     }
 
     public async dequeue(job: Job): Promise<void> {
+        console.log('Start Dequeue');
         await (new JobService).setInProgress(job);
+        console.log('set in progress done');
 
         // send to worker
         const output = { data: '' };
@@ -44,29 +47,35 @@ export default class Scheduler {
 
     private onEnd(job: Job, output: { data: string }) {
         return async() => {
+            console.log('stopping in progress');
             await (new JobService()).stopInProgress(job);
+            console.log('stop in progress done');
 
             // save log entry
-            await (new LogService()).create(new LogStruct({
+            await (new LogService()).create({
                 job_id: job.id,
                 status: 'success',
                 output: output.data,
                 error: null
-            }));
+            });
+            console.log('Log Created');
         }
     }
 
     private onError(job: Job, output: { data: string }) {
         return async (error: string) => {
+            console.log('stopping in progress');
             await (new JobService()).stopInProgress(job);
+            console.log('stop in progress done');
 
             // save log entry
-            await (new LogService()).create(new LogStruct({
+            await (new LogService()).create({
                 job_id: job.id,
                 status: 'failed',
                 output: output.data,
                 error: error
-            }));
+            });
+            console.log('Log Created');
         }
     }
 }

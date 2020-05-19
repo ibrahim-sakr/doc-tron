@@ -3,6 +3,7 @@ import ControllerInterface from '../interfaces/ControllerInterface';
 import JobService from "../../services/JobService";
 import CreateJobValidation from "../validations/CreateJobValidation";
 import FindJobValidation from "../validations/FindJobValidation";
+import {Job} from "../../database/models/Job";
 
 export default class JobController implements ControllerInterface {
     private basePath = '/jobs'
@@ -22,9 +23,8 @@ export default class JobController implements ControllerInterface {
 
     private init(): void {
         this.router.get('/', this.index);
-        this.router.post('/', (new CreateJobValidation).validate(), this.create);
+        this.router.post('/', (new CreateJobValidation).validate(), this.update);
         this.router.get('/:jobId', (new FindJobValidation).validate(), this.find);
-        this.router.put('/:jobId', (new CreateJobValidation).validate(), this.update);
         this.router.delete('/:jobId', (new FindJobValidation).validate(), this.delete);
     }
 
@@ -35,14 +35,6 @@ export default class JobController implements ControllerInterface {
         return res.json(jobs);
     }
 
-    private async create(req: Request, res: Response) {
-        // validation done on a middleware
-        // create job
-        const job = await (new JobService).create(req['job']);
-
-        return res.json(job).end();
-    }
-
     private async find(req: Request, res: Response) {
         // validation done on a middleware
         const job = await (new JobService).getById(req['jobId']);
@@ -51,7 +43,7 @@ export default class JobController implements ControllerInterface {
 
     private async update(req: Request, res: Response) {
         // validation done on a middleware
-        const job = await (new JobService).update(req.params.jobId, req['job']);
+        const job = await (new JobService).update(req['job']);
 
         return res.json(job);
     }
