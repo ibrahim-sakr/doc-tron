@@ -2,14 +2,12 @@ import {parseExpression} from "cron-parser";
 import * as moment from "moment";
 import schedulerConfig from '../config/scheduler';
 import {Job, JobInterface} from "../database/models/Job";
-import {Between, Brackets, DeleteResult, LessThanOrEqual, Like, MoreThanOrEqual} from "typeorm";
-import {WhereExpression} from "typeorm/query-builder/WhereExpression";
+import {Between, DeleteResult} from "typeorm";
+import Scheduler from "../scheduler/scheduler";
 
 export default class JobService {
-    all(query: { status?: string, search?: string }): Promise<Job[]> {
-        return Job.find({
-            name: Like(query.search ? '%' + query.search + '%' : '%%')
-        });
+    all(query: { search?: string }): Promise<Job[]> {
+        return Job.jobsWithLastLog(query);
     }
 
     async update(jobBody: JobInterface): Promise<Job> {
@@ -27,6 +25,15 @@ export default class JobService {
         return job.save();
     }
 
+    async queued(id: number, queued: boolean) {
+        // fetch job
+        const job = await Job.findOne(id);
+        // update it
+        job.queued = queued;
+        // save
+        return job.save();
+    }
+
     getReadyForDequeueList(): Promise<Job[]> {
         // select jobs where nextRun === now +- some seconds
         return Job.find({
@@ -39,11 +46,11 @@ export default class JobService {
         });
     }
 
-    getById(id: string): Promise<Job> {
+    getById(id: number): Promise<Job> {
         return Job.findOne(id);
     }
 
-    deleteById(id: string): Promise<DeleteResult> {
+    deleteById(id: number): Promise<DeleteResult> {
         return Job.delete(id);
     }
 
@@ -57,5 +64,11 @@ export default class JobService {
         job.next_run = parseExpression(job.scheduled).next().toDate();
 
         return job.save();
+    }
+
+    async dequeue(id: number) {
+        // fetch job
+        const job = await this.getById(id);
+        (new Scheduler()).dequeue(job);
     }
 }

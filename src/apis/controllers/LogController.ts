@@ -1,5 +1,7 @@
 import {Request, Response, Router, IRouter} from 'express'
 import ControllerInterface from '../interfaces/ControllerInterface';
+import LogService from "../../services/LogService";
+import FindLogValidation from "../validations/FindLogValidation";
 
 export default class LogController implements ControllerInterface {
     private basePath = '/logs'
@@ -19,16 +21,19 @@ export default class LogController implements ControllerInterface {
 
     private init(): void {
         this.router.get('/', this.index);
-        this.router.get('/:logId', this.find);
+        this.router.get('/:logId', (new FindLogValidation).validate(), this.find);
         this.router.get('/:jobId/', this.jobLogs);
     }
 
-    private index(req: Request, res: Response) {
-        return res.json({});
+    private async index(req: Request, res: Response) {
+        const logs = await (new LogService).all(req.query);
+        return res.json(logs);
     }
 
-    private find(req: Request, res: Response) {
-        return res.json({});
+    private async find(req: Request, res: Response) {
+        // validation done on a middleware
+        const log = await (new LogService).getById(req['logId']);
+        return res.json(log);
     }
 
     private jobLogs(req: Request, res: Response) {

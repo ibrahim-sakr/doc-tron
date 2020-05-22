@@ -5,6 +5,11 @@ import JobService from '../services/JobService';
 import LogService from "../services/LogService";
 import {Job} from "../database/models/Job";
 
+interface Output {
+    data: string;
+    started_at: Date;
+}
+
 export default class Scheduler {
     public run() {
         setInterval(async () => {
@@ -19,12 +24,10 @@ export default class Scheduler {
     }
 
     public async dequeue(job: Job): Promise<void> {
-        console.log('Start Dequeue');
         await (new JobService).setInProgress(job);
-        console.log('set in progress done');
 
         // send to worker
-        const output = { data: '' };
+        const output: Output = { data: '', started_at: new Date() };
         const worker = this.getWorker(job.worker['type']);
         worker.on('data', this.onData(job, output));
         worker.on('end', this.onEnd(job, output));
@@ -39,43 +42,41 @@ export default class Scheduler {
         }
     }
 
-    private onData(job: Job, output: { data: string }) {
+    private onData(job: Job, output: Output) {
         return (chunk: Buffer) => {
             output.data += chunk.toString();
         }
     }
 
-    private onEnd(job: Job, output: { data: string }) {
+    private onEnd(job: Job, output: Output) {
         return async() => {
-            console.log('stopping in progress');
             await (new JobService()).stopInProgress(job);
-            console.log('stop in progress done');
 
             // save log entry
             await (new LogService()).create({
                 job_id: job.id,
                 status: 'success',
                 output: output.data,
+                started_at: output.started_at,
+                finished_at: new Date(),
                 error: null
             });
-            console.log('Log Created');
         }
     }
 
-    private onError(job: Job, output: { data: string }) {
+    private onError(job: Job, output: Output) {
         return async (error: string) => {
-            console.log('stopping in progress');
             await (new JobService()).stopInProgress(job);
-            console.log('stop in progress done');
 
             // save log entry
             await (new LogService()).create({
                 job_id: job.id,
                 status: 'failed',
                 output: output.data,
+                started_at: output.started_at,
+                finished_at: new Date(),
                 error: error
             });
-            console.log('Log Created');
         }
     }
 }

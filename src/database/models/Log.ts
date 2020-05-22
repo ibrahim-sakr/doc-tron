@@ -5,15 +5,19 @@ import {
     CreateDateColumn,
     DeleteDateColumn,
     UpdateDateColumn,
-    BaseEntity
+    BaseEntity, ManyToOne, JoinColumn
 } from 'typeorm';
+import {Job} from "./Job";
 
 export interface LogInterface {
     id?: number;
     job_id: number;
+    job?: Job;
     status: string;
     output: string;
     error: string;
+    started_at: Date;
+    finished_at: Date;
     created_at?: Date;
     updated_at?: Date;
     deleted_at?: Date | null;
@@ -28,6 +32,10 @@ export class Log extends BaseEntity {
         type: 'int'
     })
     job_id: number;
+
+    @ManyToOne(type => Job, job => job.logs)
+    @JoinColumn({ name: 'job_id' })
+    job: Job;
 
     @Column({
         type: 'varchar',
@@ -46,6 +54,18 @@ export class Log extends BaseEntity {
         nullable: true
     })
     error: string;
+
+    @Column({
+        type: 'timestamp',
+        nullable: false,
+    })
+    started_at: Date;
+
+    @Column({
+        type: 'timestamp',
+        nullable: false,
+    })
+    finished_at: Date;
 
     @CreateDateColumn()
     created_at: Date;

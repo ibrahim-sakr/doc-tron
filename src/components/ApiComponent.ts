@@ -8,6 +8,7 @@ import UsersController from '../apis/controllers/UsersController';
 import JobController from '../apis/controllers/JobController';
 import LogController from '../apis/controllers/LogController';
 import * as cors from 'cors';
+import DashboardController from "../apis/controllers/DashboardController";
 
 export default class ApiComponent implements ComponentInterface {
 
@@ -17,6 +18,7 @@ export default class ApiComponent implements ComponentInterface {
                 port: appConfig.port,
                 controllers: [
                     new AuthController,
+                    new DashboardController,
                     new UsersController,
                     new JobController,
                     new LogController

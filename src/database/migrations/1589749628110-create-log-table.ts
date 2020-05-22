@@ -35,6 +35,16 @@ export class createLogTable1589749628110 implements MigrationInterface {
                     isNullable: true
                 },
                 {
+                    name: 'started_at',
+                    type: 'timestamp',
+                    isNullable: false
+                },
+                {
+                    name: 'finished_at',
+                    type: 'timestamp',
+                    isNullable: false
+                },
+                {
                     name: 'created_at',
                     type: 'timestamp',
                     default: 'current_timestamp',

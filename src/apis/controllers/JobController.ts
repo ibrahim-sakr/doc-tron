@@ -25,6 +25,8 @@ export default class JobController implements ControllerInterface {
         this.router.get('/', this.index);
         this.router.post('/', (new CreateJobValidation).validate(), this.update);
         this.router.get('/:jobId', (new FindJobValidation).validate(), this.find);
+        this.router.get('/:jobId/dequeue', (new FindJobValidation).validate(), this.dequeue);
+        this.router.get('/:jobId/queued', (new FindJobValidation).validate(), this.queued);
         this.router.delete('/:jobId', (new FindJobValidation).validate(), this.delete);
     }
 
@@ -51,5 +53,16 @@ export default class JobController implements ControllerInterface {
     private async delete(req: Request, res: Response) {
         // validation done on a middleware
         return res.json(await (new JobService).deleteById(req['jobId']));
+    }
+
+    private dequeue(req: Request, res: Response) {
+        // validation done on a middleware
+        (new JobService).dequeue(req['jobId']);
+        return res.json({status: 'ok'});
+    }
+
+    private async queued(req: Request, res: Response) {
+        await (new JobService).queued(req['jobId'], req.query.status === '1');
+        return res.json({status: 'ok'});
     }
 }
