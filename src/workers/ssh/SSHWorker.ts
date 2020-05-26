@@ -4,10 +4,10 @@ import {Client} from 'ssh2';
 import {readFileSync} from 'fs';
 
 export default class SSHWorker extends EventEmitter implements WorkerInterface {
-    send(job: any): void {
+    send(worker: any): void {
         const conn = new Client();
         conn.on('ready', () => {
-            conn.exec(job.worker.command, (error, stream) => {
+            conn.exec(worker.command, (error, stream) => {
                 if (error) this.emit('error', error.message);
 
                 stream.on('close', (code, signal) => {
@@ -22,11 +22,11 @@ export default class SSHWorker extends EventEmitter implements WorkerInterface {
         conn.on('error', (error) => this.emit('error', error.message));
 
         conn.connect({
-            host: job.worker.host,
-            port: job.worker.port,
-            username: job.worker.username,
+            host: worker.host,
+            port: worker.port,
+            username: worker.username,
             privateKey: readFileSync('/Users/hema/.ssh/id_rsa'),
-            passphrase: job.worker.passphrase
+            passphrase: worker.passphrase
         });
 
     }

@@ -5,13 +5,13 @@ import {URL} from 'url';
 
 export default class HttpWorker extends EventEmitter implements WorkerInterface {
 
-    send(job: any): void {
-        const {hostname, port, pathname} = new URL(job.worker.url);
+    send(worker: any): void {
+        const {hostname, port, pathname} = new URL(worker.url);
         this.request({
             hostname,
             port,
             path: pathname,
-            body: JSON.stringify(job.args)
+            body: JSON.stringify(worker.body)
         });
     }
 

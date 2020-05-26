@@ -3,3 +3,4 @@ node_modules
 testHTTP.js
 dist
 .idea
+.DS_Store

@@ -23,7 +23,6 @@ export default class DashboardController implements ControllerInterface {
     }
 
     private async statistics(req: Request, res: Response) {
-        console.log('start');
         const statistics = await (new DashboardService).statistics();
         return res.json(statistics);
     }

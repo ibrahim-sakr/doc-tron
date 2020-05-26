@@ -33,7 +33,7 @@ export default class Scheduler {
         worker.on('end', this.onEnd(job, output));
         worker.on('error', this.onError(job, output));
 
-        worker.send(job);
+        worker.send(job.worker);
     }
 
     private getWorker(type: string): WorkerInterface {

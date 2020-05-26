@@ -1,5 +1,8 @@
 import databaseConfig from "./src/config/database";
 
+const env = process.env.NODE_ENV || 'local';
+const ext = env === 'production' ? 'js' : 'ts'
+
 export = {
   type: "mysql",
   database: databaseConfig.mysql.database,
@@ -11,13 +14,13 @@ export = {
   logging: false,
   migrationsTableName: "migrations",
   entities: [
-    "src/database/models/**/*.ts"
+    "src/database/models/**/*." + ext
   ],
   migrations: [
-    "src/database/migrations/**/*.ts"
+    "src/database/migrations/**/*." + ext
   ],
   subscribers: [
-    "src/database/subscribers/**/*.ts"
+    "src/database/subscribers/**/*." + ext
   ],
   cli: {
     entitiesDir: "src/database/models",

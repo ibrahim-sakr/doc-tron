@@ -1,10 +1,14 @@
 import {ComponentInterface, Settings} from 'he-loader';
-import {createConnection} from "typeorm";
+import {ConnectionOptions, createConnection, getConnectionOptions} from "typeorm";
+import ormConfig from "../../ormconfig";
 
 export default class DBComponent implements ComponentInterface {
     async load(settings: Settings) {
-        // connection options defined in ~/ormconfig.ts
-        await createConnection().then(() => {
+
+        const connectionOptions: ConnectionOptions = await getConnectionOptions();
+        Object.assign(connectionOptions, ormConfig);
+
+        await createConnection(connectionOptions).then(() => {
             console.log('Database Connected');
         });
     }

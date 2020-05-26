@@ -6,7 +6,7 @@ import {Between, DeleteResult} from "typeorm";
 import Scheduler from "../scheduler/scheduler";
 
 export default class JobService {
-    all(query: { search?: string }): Promise<Job[]> {
+    all(query: { in_progress?: string, search?: string }): Promise<Job[]> {
         return Job.jobsWithLastLog(query);
     }
 
@@ -39,10 +39,10 @@ export default class JobService {
         return Job.find({
             in_progress: false,
             queued: true,
-            next_run: Between(
-                moment().subtract(schedulerConfig.coefficient[0] || 0, 'seconds').format('YYYY-MM-DD HH:MM:SS'),
-                moment().subtract(schedulerConfig.coefficient[1] || 0, 'seconds').format('YYYY-MM-DD HH:MM:SS')
-            )
+            // next_run: Between(
+            //     moment().subtract(schedulerConfig.coefficient[0] || 0, 'seconds').format('YYYY-MM-DD HH:MM:SS'),
+            //     moment().subtract(schedulerConfig.coefficient[1] || 0, 'seconds').format('YYYY-MM-DD HH:MM:SS')
+            // )
         });
     }
 

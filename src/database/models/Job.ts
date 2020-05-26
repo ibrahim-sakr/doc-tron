@@ -86,7 +86,7 @@ export class Job extends BaseEntity {
         this.next_run = new Date();
     }
 
-    static jobsWithLastLog(query: { search?: string }): Promise<any> {
+    static jobsWithLastLog(query: { in_progress?: string, search?: string }): Promise<any> {
         let q = `
         select
             jobs.id as job_id,
@@ -107,9 +107,22 @@ export class Job extends BaseEntity {
             WHERE id IN (SELECT MAX(id) FROM logs GROUP BY job_id)
         ) as logs on jobs.id = logs.job_id`;
 
-        if (query.search) {
-            q += ` WHERE jobs.name LIKE '%${query.search}%'`;
+        if(query.in_progress || query.search) {
+            q += ' WHERE';
+
+            if (query.in_progress) {
+                q += ` jobs.in_progress=${query.in_progress as unknown as number}`;
+            }
+
+            if(query.in_progress && query.search) {
+                q += ' AND';
+            }
+
+            if (query.search) {
+                q += ` jobs.name LIKE '%${query.search}%'`;
+            }
         }
+
         return this.query(q);
     }
 
